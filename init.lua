@@ -1,19 +1,22 @@
 local opt = vim.opt
 local cmd = vim.cmd
 local api = vim.api
+local fn  = vim.fn
 
 local map = vim.keymap.set
 
-opt.relativenumber = true 
+opt.relativenumber = true
 opt.wrap           = false
-opt.cursorline     = true 
-opt.tabstop        = 4    
-opt.softtabstop    = 4    
-opt.shiftwidth     = 4    
-opt.expandtab      = true 
-opt.incsearch      = true 
-opt.hlsearch       = true 
-opt.termguicolors  = true 
+opt.cursorline     = true
+opt.tabstop        = 4
+opt.softtabstop    = 4
+opt.shiftwidth     = 4
+opt.expandtab      = true
+opt.incsearch      = true
+opt.hlsearch       = true
+opt.termguicolors  = true
+opt.splitbelow     = true
+opt.splitright     = true
 
 -- Disable arrow keys.
 map({'n', 'i'}, '<Left>', '<Nop>')
@@ -28,31 +31,16 @@ map('n', 'l', '<Nop>')
 -- Terminal Mappings.
 map('t', '<Esc>', '<C-\\><C-n>')
 
--- Fix file extension.
-function setfiletype()
-    local ft = vim.fn.expand("%:e")
+-- Fix terminal on windows.
+opt.shell = 'pwsh.exe'
 
-    local ft = ({
-        ["lua"] = "luau"
-    })[ft]
-
-    if ft then vim.bo.filetype = ft end
-end 
-
+-- Clean terminal buffer.
 function cleanterm()
-    opt.number         = false
-    opt.relativenumber = false
+    opt.relativenumber       = false
+    vim.opt_local.statusline = "term:" .. fn.fnamemodify(vim.o.shell, ":r")
 end
 
-api.nvim_create_autocmd(
-    { "BufRead", "BufNewFile" },
-    { pattern = "*", callback = setfiletype }
-)
-
-api.nvim_create_autocmd(
-    "TermOpen",
-    { callback = cleanterm }
-)
+api.nvim_create_autocmd("TermOpen", { callback = cleanterm })
 
 require('nvim-treesitter.configs').setup {
     ensure_installed = { "c", "lua", "luau", "python", "haskell" },
@@ -66,17 +54,17 @@ require('nvim-treesitter.configs').setup {
 
 require('onedarkpro').setup {
     styles = {
-        types        = "NONE", 
-        numbers      = "NONE", 
-        strings      = "NONE", 
-        comments     = "NONE", 
-        keywords     = "NONE", 
-        constants    = "NONE", 
-        functions    = "NONE", 
-        operators    = "NONE", 
-        variables    = "NONE", 
-        conditionals = "NONE", 
-        virtual_text = "NONE", 
+        types        = "NONE",
+        numbers      = "NONE",
+        strings      = "NONE",
+        comments     = "NONE",
+        keywords     = "NONE",
+        constants    = "NONE",
+        functions    = "NONE",
+        operators    = "NONE",
+        variables    = "NONE",
+        conditionals = "NONE",
+        virtual_text = "NONE",
     },
     highlights = {
         EndOfBuffer = { fg = "${purple}" }
@@ -92,10 +80,9 @@ require('onedarkpro').setup {
 
 require('colorizer').setup()
 
-cmd [[ colorscheme onedark_dark ]]
+cmd [[ colorscheme onedark ]]
 
 -- [[ Ensure packer ]]
-
 local function ensure_packer()
     local fn = vim.fn
     local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
@@ -128,4 +115,5 @@ return require('packer').startup(function(use)
     if packer_bootstrap then
         require('packer').sync()
     end
+
 end)
