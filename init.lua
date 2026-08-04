@@ -5,6 +5,10 @@ vim.g.mapleader = " "
 vim.opt.number = true
 vim.opt.relativenumber = true
 
+-- whitespace
+vim.opt.list = true
+vim.opt.listchars = { tab = "*·", trail = "·", lead = "·", eol = "¬" }
+
 -- highlight line number
 vim.opt.cursorline = true
 
