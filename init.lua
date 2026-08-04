@@ -43,6 +43,20 @@ local on = vim.api.nvim_create_autocmd
 -- better cmd
 map("n", ":", "q:i")
 
+local function setup_cmdwin()
+    vim.opt_local.number = false
+    vim.opt_local.relativenumber = false
+
+    vim.opt_local.laststatus = 0
+
+    vim.cmd("resize 1")
+end
+
+on("CmdwinEnter", { callback = setup_cmdwin })
+
+-- terminal qol
+map("t", "<Esc>", "<C-\\><C-n>")
+
 -- buffer navigation
 map("n", "<Leader>t", ":b#<CR>")
 map("n", "<Tab>", ":bn<CR>")
@@ -72,8 +86,6 @@ map("n", "<Leader>S<", unsurround("<"))
 map("n", '<Leader>S"', unsurround('"'))
 map("n", "<Leader>S'", unsurround("'"))
 
--- terminal qol
-map("t", "<Esc>", "<C-\\><C-n>")
 
 -- addons
 local function github(link) return "https://www.github.com/" .. link end
