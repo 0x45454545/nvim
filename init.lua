@@ -7,10 +7,13 @@ vim.opt.relativenumber = true
 
 -- whitespace
 vim.opt.list = true
-vim.opt.listchars = { tab = "*·", trail = "·", lead = "·", eol = "¬" }
+vim.opt.listchars = { tab = "*·", trail = "·", lead = "·", eol = "$" }
 
 -- highlight line number
 vim.opt.cursorline = true
+
+-- cursor block
+vim.opt.guicursor = "n-v-c-i:block"
 
 -- no line wrapping
 vim.opt.wrap = false
@@ -115,7 +118,7 @@ local function load_tree_sitter(args)
 
     local success, _ = pcall(vim.treesitter.start, args.buf)
 
-    if success then 
+    if success then
         vim.bo[args.buf].indentexpr = "v:lua.ts_indent()"
     end
 
