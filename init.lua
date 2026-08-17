@@ -36,15 +36,11 @@ vim.opt.shell = "pwsh -NoLogo"
 vim.opt.shellcmdflag = "-NoLogo -Command"
 vim.opt.shellxquote = ""
 
--- le snake motions
-vim.opt.iskeyword:remove("_")
-
 -- mappings
 local map = vim.keymap.set
 local on = vim.api.nvim_create_autocmd
 
 -- buffer navigation
-map("n", "<Leader>t", ":b#<CR>")
 map("n", "<Tab>", ":bn<CR>")
 map("n", "<S-Tab>", ":bp<CR>")
 
@@ -100,6 +96,7 @@ local function github(link) return "https://www.github.com/" .. link end
 local addons = {
     github ("nvim-treesitter/nvim-treesitter"),
     github ("0x45454545/gruber-darker.nvim"),
+    github ("0x45454545/scratch.nvim"),
 }
 
 vim.pack.add(addons)
@@ -130,3 +127,9 @@ on("FileType", { callback = load_tree_sitter })
 local gruber = require "gruber-darker"
 
 gruber.load(gruber.style.modern)
+
+-- scratch buffer
+local scratch  = require "scratch"
+
+scratch.open_on("<Leader>t")
+scratch.eval_on("<Leader>x")
