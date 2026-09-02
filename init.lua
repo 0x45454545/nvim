@@ -1,135 +1,55 @@
--- leader
-vim.g.mapleader = " "
+vim.o.nu  = true
+vim.o.rnu = true
+vim.o.cul = true
 
--- line numbers
-vim.opt.number = true
-vim.opt.relativenumber = true
+vim.o.wrap = false
+vim.o.list = true
+vim.o.lcs  = "tab:>>,trail:·,lead:·,eol:$"
 
--- whitespace
-vim.opt.list = true
-vim.opt.listchars = { tab = "*·", trail = "·", lead = "·", eol = "$" }
+vim.o.gcr = "n-v-c-i:block"
 
--- highlight line number
-vim.opt.cursorline = true
+vim.o.ts  = 4
+vim.o.sts = 4
+vim.o.sw  = 0
+vim.o.et  = true
 
--- cursor block
-vim.opt.guicursor = "n-v-c-i:block"
+vim.o.is  = true
+vim.o.hls = true
 
--- no line wrapping
-vim.opt.wrap = false
+vim.o.tgc = true
 
--- four spaces for tabs
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
+vim.o.sh   = "pwsh -NoLogo"
+vim.o.shcf = "-NoLogo -Command"
+vim.o.sxq  = ""
 
--- highlight incremental search
-vim.opt.incsearch = true
-vim.opt.hlsearch = true
+vim.o.stl = "%#Directory#%f%*:%{&readonly ? &modified ? '%*' : '%%' : &modified ? '**' : '--'} %#Number#%4l%*:%#Number#%-4c%*%=[%#Keyword#%{&filetype}%*]%=%%%#Number#%-3p%*"
 
--- more colors
-vim.opt.termguicolors = true
+vim.keymap.set("n", "<Tab>", "<Cmd>bn<Cr>")
+vim.keymap.set("n", "<S-Tab>", "<Cmd>bp<Cr>")
 
--- pwsh as cmdline/shell
-vim.opt.shell = "pwsh -NoLogo"
-vim.opt.shellcmdflag = "-NoLogo -Command"
-vim.opt.shellxquote = ""
+vim.keymap.set("n", "J", "<Cmd>m +1<Cr>")
+vim.keymap.set("n", "K", "<Cmd>m -2<Cr>")
 
--- mappings
-local map = vim.keymap.set
-local on = vim.api.nvim_create_autocmd
+vim.keymap.set("n", ":", "q:i")
 
--- buffer navigation
-map("n", "<Tab>", ":bn<CR>")
-map("n", "<S-Tab>", ":bp<CR>")
+vim.cmd [[ au CmdwinEnter * let &l:nu  = v:false
+                         \| let &l:rnu = v:false
+                         \| let &l:ls  = 0
+                         \| resize 1 ]]
 
--- visual line move
-map("n", "J", ":m +1<CR>")
-map("n", "K", ":m -2<CR>")
+vim.cmd [[ au CmdwinLeave * let &l:ls = 3 ]]
 
--- surround selection
-local function surround(l, r) return "<Esc>`>a" .. r .. "<Esc>`<i" .. l .. "<Esc>lm<`>lm>gv" end
+vim.cmd [[ au FileType * lua pcall(vim.treesitter.start) ]]
 
-map("x", "<Leader>s(", surround("(", ")"))
-map("x", "<Leader>s{", surround("{", "}"))
-map("x", "<Leader>s[", surround("[", "]"))
-map("x", "<Leader>s<", surround("<", ">"))
-map("x", '<Leader>s"', surround('"', '"'))
-map("x", "<Leader>s'", surround("'", "'"))
-
--- unsurround
-local function unsurround(l) return "va" .. l .. "<Esc>xF" .. l .. "x" end
-
-map("n", "<Leader>S(", unsurround("("))
-map("n", "<Leader>S{", unsurround("{"))
-map("n", "<Leader>S[", unsurround("["))
-map("n", "<Leader>S<", unsurround("<"))
-map("n", '<Leader>S"', unsurround('"'))
-map("n", "<Leader>S'", unsurround("'"))
-
--- better command line
-map("n", ":", "q:i")
-
-local function setup_cmdwin()
-    vim.opt_local.number = false
-    vim.opt_local.relativenumber = false
-    vim.opt_local.laststatus = 0
-
-    vim.cmd("resize 1")
-end
-
-on("CmdwinEnter", { callback = setup_cmdwin })
-
--- better terminal
-map("t", "<Esc>", "<C-\\><C-n>")
-
-local function setup_terminal()
-    vim.opt_local.statusline = "term :: pwsh"
-end
-
-on("TermOpen", { callback = setup_terminal })
-
--- addons
-local function github(link) return "https://www.github.com/" .. link end
+local github = "https://www.github.com/"
 
 local addons = {
-    github ("nvim-treesitter/nvim-treesitter"),
-    github ("0x45454545/gruber-darker.nvim"),
-    github ("0x45454545/scratch.nvim"),
+    github .. "nvim-treesitter/nvim-treesitter",
+    github .. "0x45454545/gruber-darker.nvim"
 }
 
 vim.pack.add(addons)
 
--- tree sitter
-local ts = require "nvim-treesitter"
-
-local languages = { "c", "lua", "python", "haskell", "ocaml" }
-
-ts.install(languages)
-
--- v:lua needs it
-_G.ts_indent = ts.indentexpr
-
-local function load_tree_sitter(args)
-
-    local success, _ = pcall(vim.treesitter.start, args.buf)
-
-    if success then
-        vim.bo[args.buf].indentexpr = "v:lua.ts_indent()"
-    end
-
-end
-
-on("FileType", { callback = load_tree_sitter })
-
--- gruber darker
 local gruber = require "gruber-darker"
 
 gruber.load(gruber.style.modern)
-
--- scratch buffer
-local scratch  = require "scratch"
-
-scratch.open_on("<Leader>t")
-scratch.eval_on("<Leader>x")
